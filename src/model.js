@@ -87,7 +87,7 @@ export function JukeBox(onTargetChange, ...props) {
   return (
     <group {...props} dispose={null}>
       <group
-        position={[6.2, 0.77, 2.65]}
+        position={[-3.4, -4.3, -7.4]}
         rotation={[-Math.PI, 1.15, -Math.PI]}
         scale={[1.66, 2.12, 1.63]}
         onClick={(e) => {
@@ -114,6 +114,7 @@ export function JukeBox(onTargetChange, ...props) {
 
 export function Model({ onCameraMove, onTargetChange, ...props }) {
   const { nodes, materials } = useGLTF("/beachScene1.glb");
+  
   const ref = useRef();
   useFrame(() => {
     ref.current.color = "orange" ? "hotpink" : "orange";
@@ -231,7 +232,12 @@ export function Model({ onCameraMove, onTargetChange, ...props }) {
         geometry={nodes.Floor.geometry}
         material={materials["Sand Material"]}
         position={[1.91, 0, 1.26]}
-        scale={[40.8, -0.02, 40.27]}
+        scale={[10, -0.002, 8.2]}
+        onClick={(e) => { 
+          console.log("Clicked Floor ...", e);
+          onTargetChange("Floor");
+          
+        }}
       />
       <mesh
         castShadow

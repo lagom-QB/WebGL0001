@@ -13,16 +13,17 @@ import { Suspense, useRef, useState, useEffect } from "react";
 import { Model, ModelText, JukeBox } from "./model";
 import { MovingTruck } from "./modelTruck";
 import * as THREE from "three";
+import React from "react";
 
 /**
  * WEBGL - Final
  * -- T0DO --
  * User can click on the beach and the camera will move to the position ❌
- * User can rotate but not zoom
+ * User can rotate but not zoom  ✅
  * User can click on the beach Menu to visit targeted areas:
- * - Beach --> Buggy
- * - Bar --> Bar
- * - Study --> JukeBox
+ * - Beach --> Buggy  ✅
+ * - Bar --> Bar  ✅
+ * - Study --> JukeBox  ✅
  * -- Notice --
  * I don't add sparkles because I have stars
  * Cameras are tricky
@@ -57,26 +58,25 @@ function PointLight() {
   );
 }
 
-function Looker({ cameraPosition, lookAtPoint, target }) {
+function Looker({ cameraPosition, lookAtPoint }) {
   const { camera, controls } = useThree();
-
-  console.log(lookAtPoint);
+  camera.rotation.y = -Math.PI / 4;
 
   useEffect(() => {
-    console.log(target, " .....");
+    // console.log("Looker", lookAtPoint);
     camera.position.x = cameraPosition[0];
     camera.position.z = cameraPosition[2];
     camera.updateProjectionMatrix(); ///  important
     if (controls) {
       controls.update();
     }
-  }, [target, cameraPosition, camera, controls]);
+  }, [cameraPosition, camera, controls, lookAtPoint]);
 
   return (
     <OrbitControls
       makeDefault
       enableZoom={true}
-      enablePan={true}
+      enablePan={false}
       enableRotate={true}
       target={lookAtPoint}
     />
@@ -89,22 +89,12 @@ export default function App() {
     [lookAtPoint, setLookAtPoint] = useState(),
     beachSphere = useRef(),
     barSphere = useRef(),
-    studySphere = useRef();
+    studySphere = useRef(),
+    initPosition = new THREE.Vector3(0, 10, 0);
 
   useEffect(() => {
-    console.log(studySphere);
-    /* switch (target) {
-      case "Study":
-        setLookAtPoint(studySphere.current.position);
-        break;
-      case "Beach":
-        setLookAtPoint(beachSphere.current.position);
-        break;
-      case "Bar":
-      default:
-        setLookAtPoint(barSphere.current.position);
-        break;
-    } */
+    // console.log("This is in the useEffect ...", target, studySphere.current);
+    setLookAtPoint([target.x, target.y, target.z]);
   }, [target]);
 
   return (
@@ -112,6 +102,7 @@ export default function App() {
       className="canvas"
       camera={{
         position: [-10, 5, -10],
+        rotation: [-Math.PI / 2, 0, 0],
       }}
     >
       <Looker
@@ -133,17 +124,14 @@ export default function App() {
         <Stars />
         <>
           <group>
-            <mesh ref={beachSphere} position={[-10, 0, -10]}>
+            <mesh visible={false} ref={beachSphere} position={[-90, -20, -55]}>
               <sphereGeometry scale={0.6} />
-              <meshNormalMaterial />
             </mesh>
-            <mesh ref={barSphere} position={[-10, 0, -10]}>
+            <mesh visible={false} ref={barSphere} position={[-100, -30, -85]}>
               <sphereGeometry scale={0.6} />
-              <meshNormalMaterial />
             </mesh>
-            <mesh visisble={false} ref={studySphere} position={[-39, 0, -75]}>
+            <mesh visible={false} ref={studySphere} position={[-39, -40, -75]}>
               <sphereGeometry scale={0.6} />
-              <meshNormalMaterial />
             </mesh>
           </group>
         </>
@@ -154,20 +142,147 @@ export default function App() {
             scale={1}
             position={[-10, -5, -10]}
             onCameraMove={(pos) => {
-              setCameraPosition([pos.x, 10, pos.z]);
+              setCameraPosition([pos.x, 20, pos.z]);
             }}
             onTargetChange={(t) => {
-              console.log("new target", t, "at", barSphere.current.position);
-              setTarget(barSphere.current.position);
+              console.log("new target " + t, "at", barSphere.current.position);
+              if (t === "Buggy") {
+                setCameraPosition([
+                  beachSphere.current.position.x,
+                  -20,
+                  beachSphere.current.position.z,
+                ]);
+                setLookAtPoint([
+                  beachSphere.current.position.x,
+                  -20,
+                  beachSphere.current.position.z,
+                ]);
+              } else if (t === "Floor") {
+                console.log("You clicked on the floor, Going back");
+                setCameraPosition([0, -40, 0]);
+                setLookAtPoint([0, -40, 0]);
+              } else if (t === "Study") {
+                setCameraPosition([
+                  studySphere.current.position.x,
+                  -40,
+                  studySphere.current.position.z,
+                ]);
+                setLookAtPoint([
+                  studySphere.current.position.x,
+                  -40,
+                  studySphere.current.position.z,
+                ]);
+              } else {
+                setCameraPosition([
+                  barSphere.current.position.x,
+                  -25,
+                  barSphere.current.position.z,
+                ]);
+                setLookAtPoint([
+                  barSphere.current.position.x,
+                  -25,
+                  barSphere.current.position.z,
+                ]);
+              }
             }}
           />
-          <JukeBox/>
+          <JukeBox
+            scale={1}
+            onTargetChange={(t) => {
+              console.log(
+                "new target " + t,
+                "at",
+                studySphere.current.position
+              );
+              if (t === "Buggy") {
+                setCameraPosition([
+                  beachSphere.current.position.x,
+                  -20,
+                  beachSphere.current.position.z,
+                ]);
+                setLookAtPoint([
+                  beachSphere.current.position.x,
+                  -20,
+                  beachSphere.current.position.z,
+                ]);
+              } else if (t === "Floor") {
+                console.log("You clicked on the floor, Going back");
+                setCameraPosition([0, -40, 0]);
+                setLookAtPoint([0, -40, 0]);
+              } else if (t === "Study") {
+                setCameraPosition([
+                  studySphere.current.position.x,
+                  -40,
+                  studySphere.current.position.z,
+                ]);
+                setLookAtPoint([
+                  studySphere.current.position.x,
+                  -40,
+                  studySphere.current.position.z,
+                ]);
+              } else {
+                setCameraPosition([
+                  barSphere.current.position.x,
+                  -25,
+                  barSphere.current.position.z,
+                ]);
+                setLookAtPoint([
+                  barSphere.current.position.x,
+                  -25,
+                  barSphere.current.position.z,
+                ]);
+              }
+            }}
+          />
           <ModelText position-y={-5} />
           <MovingTruck
             position-y={-5}
             onTargetChange={(t) => {
-              console.log("new target Truck", t);
-              setTarget(beachSphere.current.position);
+              console.log(
+                "new target " + t,
+                "at",
+                beachSphere.current.position,
+                "from",
+                cameraPosition
+              );
+              if (t === "Buggy") {
+                setCameraPosition([
+                  beachSphere.current.position.x,
+                  -20,
+                  beachSphere.current.position.z,
+                ]);
+                setLookAtPoint([
+                  beachSphere.current.position.x,
+                  -20,
+                  beachSphere.current.position.z,
+                ]);
+              } else if (t === "Floor") {
+                console.log("You clicked on the floor, Going back");
+                setCameraPosition([0, -40, 0]);
+                setLookAtPoint([0, -40, 0]);
+              } else if (t === "Study") {
+                setCameraPosition([
+                  studySphere.current.position.x,
+                  -40,
+                  studySphere.current.position.z,
+                ]);
+                setLookAtPoint([
+                  studySphere.current.position.x,
+                  -40,
+                  studySphere.current.position.z,
+                ]);
+              } else {
+                setCameraPosition([
+                  barSphere.current.position.x,
+                  -25,
+                  barSphere.current.position.z,
+                ]);
+                setLookAtPoint([
+                  barSphere.current.position.x,
+                  -25,
+                  barSphere.current.position.z,
+                ]);
+              }
             }}
           />
         </group>
@@ -178,6 +293,7 @@ export default function App() {
     </Canvas>
   );
 }
+
 /*
  * ==================================================
  * --- Basic Features (required to pass) ---
