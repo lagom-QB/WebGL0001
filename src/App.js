@@ -76,7 +76,7 @@ function Looker({ cameraPosition, lookAtPoint }) {
     <OrbitControls
       makeDefault
       enableZoom={true}
-      enablePan={false}
+      enablePan={true}
       enableRotate={true}
       target={lookAtPoint}
     />
@@ -124,8 +124,8 @@ export default function App() {
         <Stars />
         <>
           <group>
-            <mesh visible={false} ref={beachSphere} position={[-90, -20, -55]}>
-              <sphereGeometry scale={0.6} />
+            <mesh visible={false} ref={beachSphere} position={[-150, -50, -50]}>
+              <sphereGeometry scale={0.9} />
             </mesh>
             <mesh visible={false} ref={barSphere} position={[-100, -30, -85]}>
               <sphereGeometry scale={0.6} />
