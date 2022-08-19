@@ -49,7 +49,7 @@ function PointLight() {
         ref={light}
         angle={0.5}
         position={[-3, 7, 0]}
-        intensity={0.4}
+        intensity={0.7}
         color="#0ff3e0"
         distance={20}
         blur={0.5}
@@ -99,6 +99,9 @@ export default function App() {
 
   return (
     <Canvas
+      shadows
+      colorManagement
+      shadowMap
       className="canvas"
       camera={{
         position: [-10, 5, -10],
@@ -286,7 +289,7 @@ export default function App() {
             }}
           />
         </group>
-        <Environment frames={Infinity} files="/moonless_golf_1k.hdr" />
+        <Environment frames={Infinity} files="/moonless_golf_1k.hdr"/>
       </Suspense>
       <AdaptiveDpr pixelated />
       <AdaptiveEvents />

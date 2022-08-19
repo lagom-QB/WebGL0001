@@ -7,7 +7,7 @@ import { useGLTF, Text3D, RoundedBox } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 
 export function ModelText(props) {
-  const { materials } = useGLTF("/beachScene1.glb");
+  const { materials } = useGLTF("/beachScene.glb");
 
   const displayName = `Tebid Quinsy Brenda`,
     displayTitle1 = "- Creative Developer",
@@ -28,8 +28,8 @@ export function ModelText(props) {
         receiveShadow
         args={[20, 15, 0.4]}
         radius={0.025}
-        smoothness={2}
-        roughness={5}
+        smoothness={1}
+        roughness={50}
         material={materials["Thatch Material"]}
       >
         <mesh castShadow receiveShadow position={[3, 1, 1.9]} />
@@ -82,7 +82,7 @@ export function ModelText(props) {
 }
 
 export function JukeBox(onTargetChange, ...props) {
-  const { materials, nodes } = useGLTF("/beachScene1.glb");
+  const { materials, nodes } = useGLTF("/beachScene.glb");
 
   return (
     <group {...props} dispose={null}>
@@ -113,7 +113,7 @@ export function JukeBox(onTargetChange, ...props) {
 }
 
 export function Model({ onCameraMove, onTargetChange, ...props }) {
-  const { nodes, materials } = useGLTF("/beachScene1.glb");
+  const { nodes, materials } = useGLTF("/beachScene.glb");
 
   const ref = useRef();
   useFrame(() => {
@@ -122,6 +122,15 @@ export function Model({ onCameraMove, onTargetChange, ...props }) {
 
   return (
     <group {...props} dispose={null}>
+      <group name="Point" position={[0, 5, 0]}>
+        <pointLight
+          name="Point_Orientation"
+          intensity={3.4}
+          decay={2}
+          color="#565137"
+          rotation={[-Math.PI / 2, 0, 0]}
+        />
+      </group>
       <mesh
         castShadow
         receiveShadow
@@ -226,20 +235,19 @@ export function Model({ onCameraMove, onTargetChange, ...props }) {
         rotation={[1.38, -0.28, 2.65]}
         scale={[0.23, 0.33, -0.01]}
       />
-      <RoundedBox radius={.5} smoothness={2} roughness={5}>
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Floor.geometry}
-          material={materials["Sand Material"]}
-          position={[1.91, 0, 1.26]}
-          scale={[10, -0.002, 8.2]}
-          onClick={(e) => {
-            console.log("Clicked Floor ...", e);
-            onTargetChange("Floor");
-          }}
-        />
-      </RoundedBox>
+      <mesh
+        name="Floor"
+        castShadow
+        receiveShadow
+        geometry={nodes.Floor.geometry}
+        material={materials["Sand Material"]}
+        position={[1.91, 0, 1.26]}
+        scale={[10, -0.002, 8.2]}
+        onClick={(e) => {
+          console.log("Clicked Floor ...", e);
+          onTargetChange("Floor");
+        }}
+      />
 
       <mesh
         castShadow
@@ -329,4 +337,4 @@ export function Model({ onCameraMove, onTargetChange, ...props }) {
   );
 }
 
-useGLTF.preload("/beachScene1.glb");
+useGLTF.preload("/beachScene.glb");
